@@ -1,0 +1,8 @@
+# EUFIA SHIPPING robots.txt
+
+User-agent: *
+Allow: /
+Disallow: /auth
+Disallow: /dashboard
+
+Sitemap: https://www.eufiashipping.com/sitemap.xml

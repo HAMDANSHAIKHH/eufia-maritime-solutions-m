@@ -1,0 +1,17 @@
+{
+  "name": "EUFIA — Maritime Shipping & Global Logistics",
+  "short_name": "EUFIA",
+  "description": "Connecting global trade through intelligent maritime solutions — vessel chartering, shipping, freight forwarding and global logistics.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#FCEDDE",
+  "theme_color": "#FCEDDE",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}
