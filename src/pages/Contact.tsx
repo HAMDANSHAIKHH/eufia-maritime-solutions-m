@@ -4,8 +4,6 @@ import { useEffect, useRef, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { Link, useSearchParams } from "react-router";
 import { z } from "zod";
-import { useMutation } from "convex/react";
-import { api } from "@/convex/_generated/api";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
 import { Reveal, SplitHeading, StaggerGroup, StaggerItem } from "@/components/anim/primitives";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -62,7 +60,6 @@ const now = () => Date.now();
 
 export default function Contact() {
   const [searchParams] = useSearchParams();
-  const submitEnquiry = useMutation(api.contact.submit);
   const [status, setStatus] = useState<"idle" | "submitting" | "success" | "error">(
     "idle",
   );
@@ -115,29 +112,66 @@ export default function Contact() {
   const onSubmit = async (values: EnquiryForm) => {
     setStatus("submitting");
     setErrorMessage(null);
+
+    // Honeypot check: pretend success if bot filled website field
+    if (values.website && values.website.trim().length > 0) {
+      setStatus("success");
+      reset();
+      return;
+    }
+
+    // Completion speed check: pretend success if completed under 2.5 seconds
+    if (loadedAtRef.current > 0 && Date.now() - loadedAtRef.current < 2500) {
+      setStatus("success");
+      reset();
+      return;
+    }
+
+    const scriptUrl = import.meta.env.VITE_GOOGLE_SCRIPT_URL;
+
+    if (!scriptUrl || typeof scriptUrl !== "string" || scriptUrl.trim() === "") {
+      setStatus("error");
+      setErrorMessage(
+        "The contact form service endpoint is not configured yet. Please email us directly at ops@eufiashipping.com or call +971 56 611 0312."
+      );
+      return;
+    }
+
     try {
-      await submitEnquiry({
+      const payload = {
         name: values.name,
-        company: values.company || undefined,
+        company: values.company || "",
         email: values.email,
-        phone: values.phone || undefined,
-        service: values.service || undefined,
+        phone: values.phone || "",
+        service: values.service || "",
         subject: values.subject,
         message: values.message,
         consent: values.consent,
-        website: values.website,
-        loadedAt: loadedAtRef.current,
+        timestamp: new Date().toISOString(),
         sourcePage: window.location.pathname,
+      };
+
+      const response = await fetch(scriptUrl, {
+        method: "POST",
+        headers: {
+          "Content-Type": "text/plain;charset=utf-8",
+        },
+        body: JSON.stringify(payload),
       });
-      setStatus("success");
-      reset();
-      loadedAtRef.current = now();
+
+      if (response.ok || response.type === "opaque") {
+        setStatus("success");
+        reset();
+        loadedAtRef.current = now();
+      } else {
+        throw new Error("Form submission failed. Please try again.");
+      }
     } catch (error) {
       setStatus("error");
       setErrorMessage(
         error instanceof Error
-          ? error.message.replace(/^Uncaught Exception:?\s*/i, "")
-          : "Something went wrong while sending your enquiry. Please try again.",
+          ? error.message
+          : "Something went wrong while sending your enquiry. Please try again or email ops@eufiashipping.com directly."
       );
     }
   };
