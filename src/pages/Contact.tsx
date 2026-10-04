@@ -159,6 +159,22 @@ export default function Contact() {
         body: JSON.stringify(payload),
       });
 
+      const data = await response.json().catch(() => null);
+
+      if (data && typeof data === "object") {
+        if (data.success === false || data.success === "false") {
+          throw new Error(
+            data.message || "Something went wrong while sending your enquiry. Please try again."
+          );
+        }
+        if (data.success === true || data.success === "true") {
+          setStatus("success");
+          reset();
+          loadedAtRef.current = now();
+          return;
+        }
+      }
+
       if (response.ok || response.type === "opaque") {
         setStatus("success");
         reset();
