@@ -23,9 +23,9 @@ export type PageSeo = {
 };
 
 export function absoluteUrl(path: string): string {
-  if (typeof window === "undefined") return `${SITE.url}${path}`;
-  const origin = window.location.origin;
-  return path.startsWith("http") ? path : `${origin}${path}`;
+  if (path.startsWith("http://") || path.startsWith("https://")) return path;
+  const cleanPath = path.startsWith("/") ? path : `/${path}`;
+  return `${SITE.url}${cleanPath}`;
 }
 
 function upsertMeta(attr: "name" | "property", key: string, content: string) {
