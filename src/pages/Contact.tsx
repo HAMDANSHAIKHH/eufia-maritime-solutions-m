@@ -12,7 +12,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { SERVICES } from "@/data/services";
 import { CONTACT } from "@/data/site";
-import { breadcrumbJsonLd, usePageSeo } from "@/lib/seo";
+import { breadcrumbJsonLd, contactPageJsonLd, mergeJsonLd, usePageSeo } from "@/lib/seo";
 import { cn } from "@/lib/utils";
 
 const enquirySchema = z.object({
@@ -103,10 +103,18 @@ export default function Contact() {
     description:
       "Contact EUFIA about vessel chartering, dry bulk and tanker shipping, freight forwarding, project cargo, maritime consultancy, cargo inspection or global logistics.",
     path: "/contact",
-    jsonLd: breadcrumbJsonLd([
-      { name: "Home", path: "/" },
-      { name: "Contact", path: "/contact" },
-    ]),
+    jsonLd: mergeJsonLd(
+      breadcrumbJsonLd([
+        { name: "Home", path: "/" },
+        { name: "Contact", path: "/contact" },
+      ]),
+      contactPageJsonLd({
+        name: "Contact EUFIA",
+        description:
+          "Contact EUFIA to discuss vessel chartering, freight forwarding, project cargo, maritime consultancy, inspection services or global logistics support.",
+        path: "/contact",
+      }),
+    ),
   });
 
   const onSubmit = async (values: EnquiryForm) => {

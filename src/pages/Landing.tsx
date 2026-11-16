@@ -1,6 +1,4 @@
-import { motion, useScroll, useTransform } from "framer-motion";
 import { ArrowRight } from "lucide-react";
-import { useRef } from "react";
 import { Link } from "react-router";
 import { ServiceArt } from "@/components/art/scenes";
 import { WorldMap } from "@/components/art/WorldMap";
@@ -10,7 +8,13 @@ import { ServicesScroller } from "@/components/ServicesScroller";
 import { Reveal, SplitHeading, StaggerGroup, StaggerItem } from "@/components/anim/primitives";
 import { SERVICES } from "@/data/services";
 import { SITE } from "@/data/site";
-import { mergeJsonLd, organizationJsonLd, usePageSeo, websiteJsonLd } from "@/lib/seo";
+import {
+  mergeJsonLd,
+  organizationJsonLd,
+  usePageSeo,
+  webPageJsonLd,
+  websiteJsonLd,
+} from "@/lib/seo";
 
 const WHY_EUFIA = [
   {
@@ -41,76 +45,61 @@ export default function Landing() {
     description:
       "Connecting global trade through intelligent maritime solutions. EUFIA provides vessel chartering, dry bulk and tanker shipping, freight forwarding, project cargo, maritime consultancy, cargo inspection, global logistics, maritime AI and digital solutions, and vessel spare parts supply.",
     path: "/",
-    jsonLd: mergeJsonLd(organizationJsonLd(), websiteJsonLd()),
+    jsonLd: mergeJsonLd(
+      organizationJsonLd(),
+      websiteJsonLd(),
+      webPageJsonLd({
+        name: "EUFIA Maritime Shipping & Logistics",
+        description:
+          "EUFIA provides maritime chartering, dry bulk and tanker shipping, freight forwarding, project cargo and global logistics support.",
+        path: "/",
+      }),
+    ),
   });
-
-  const heroRef = useRef<HTMLElement>(null);
-  const { scrollYProgress } = useScroll({
-    target: heroRef,
-    offset: ["start start", "end start"],
-  });
-  const artY = useTransform(scrollYProgress, [0, 1], ["0%", "16%"]);
-  const artScale = useTransform(scrollYProgress, [0, 1], [1, 1.08]);
-  const contentY = useTransform(scrollYProgress, [0, 1], [0, -70]);
-  const contentOpacity = useTransform(scrollYProgress, [0, 0.75], [1, 0]);
 
   return (
     <>
       {/* ------------------------------- HERO ------------------------------- */}
-      <section ref={heroRef} className="relative min-h-[100svh] overflow-hidden">
-        <motion.div
-          style={{ y: artY, scale: artScale }}
-          className="absolute inset-0"
-          aria-hidden="true"
-        >
+      <section className="relative min-h-[100svh] overflow-hidden">
+        <div className="absolute inset-0" aria-hidden="true">
           <HeroScene className="h-full w-full" />
           <div className="grain absolute inset-0" />
-        </motion.div>
+        </div>
 
-        <motion.div
-          style={{ y: contentY, opacity: contentOpacity }}
-          className="relative mx-auto flex min-h-[100svh] max-w-[1400px] flex-col justify-center px-5 pb-28 pt-36 sm:px-8"
-        >
-          <Reveal delay={0.15} y={18}>
-            <span className="flex items-center gap-4 text-caramel">
-              <span className="h-px w-12 bg-caramel/70" aria-hidden="true" />
-              <span className="eyebrow">Maritime · Chartering · Logistics</span>
-            </span>
-          </Reveal>
+        <div className="relative mx-auto flex min-h-[100svh] max-w-[1400px] flex-col justify-center px-5 pb-28 pt-36 sm:px-8">
+          <div className="flex items-center gap-4 text-caramel">
+            <span className="h-px w-12 bg-caramel/70" aria-hidden="true" />
+            <span className="eyebrow">Maritime · Chartering · Logistics</span>
+          </div>
 
           <SplitHeading
             as="h1"
             lines={[["Moving Global"], ["Trade Forward."]]}
             className="mt-7 font-display text-[clamp(3rem,8.6vw,7.5rem)] leading-[0.95] tracking-[-0.03em] text-navy"
-            delay={0.25}
-            stagger={0.075}
+            animate={false}
           />
 
-          <Reveal delay={0.75} y={24}>
-            <p className="mt-8 max-w-xl text-base leading-relaxed text-navy/80 sm:text-lg">
-              {SITE.heroCopy}
-            </p>
-          </Reveal>
+          <p className="mt-8 max-w-xl text-base leading-relaxed text-navy/80 sm:text-lg">
+            {SITE.heroCopy}
+          </p>
 
-          <Reveal delay={0.95} y={24}>
-            <div className="mt-10 flex flex-col gap-4 sm:flex-row sm:items-center">
-              <Link
-                to="/services"
-                className="group inline-flex items-center justify-center gap-3 rounded-md bg-caramel px-8 py-4 text-sm font-semibold uppercase tracking-[0.18em] text-warm transition-all duration-300 hover:bg-caramel-deep hover:shadow-[0_20px_44px_-20px_rgba(192,127,69,0.95)]"
-              >
-                Explore Our Services
-                <ArrowRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1.5" />
-              </Link>
-              <Link
-                to="/contact?intent=quote"
-                className="group inline-flex items-center justify-center gap-3 rounded-md border border-navy/30 bg-warm/50 px-8 py-4 text-sm font-semibold uppercase tracking-[0.18em] text-navy backdrop-blur-sm transition-all duration-300 hover:border-navy hover:bg-warm"
-              >
-                Request a Quote
-                <ArrowRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1.5" />
-              </Link>
-            </div>
-          </Reveal>
-        </motion.div>
+          <div className="mt-10 flex flex-col gap-4 sm:flex-row sm:items-center">
+            <Link
+              to="/services"
+              className="group inline-flex items-center justify-center gap-3 rounded-md bg-caramel px-8 py-4 text-sm font-semibold uppercase tracking-[0.18em] text-warm transition-all duration-300 hover:bg-caramel-deep hover:shadow-[0_20px_44px_-20px_rgba(192,127,69,0.95)]"
+            >
+              Explore Our Services
+              <ArrowRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1.5" />
+            </Link>
+            <Link
+              to="/contact?intent=quote"
+              className="group inline-flex items-center justify-center gap-3 rounded-md border border-navy/30 bg-warm/50 px-8 py-4 text-sm font-semibold uppercase tracking-[0.18em] text-navy backdrop-blur-sm transition-all duration-300 hover:border-navy hover:bg-warm"
+            >
+              Request a Quote
+              <ArrowRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1.5" />
+            </Link>
+          </div>
+        </div>
 
         {/* scroll indicator */}
         <div className="absolute bottom-8 right-6 hidden flex-col items-center gap-3 lg:flex">
@@ -184,27 +173,30 @@ export default function Landing() {
           </div>
 
           <div className="relative lg:col-span-7">
-            <motion.div
-              initial={{ clipPath: "inset(0 0 100% 0)" }}
-              whileInView={{ clipPath: "inset(0 0 0% 0)" }}
-              viewport={{ once: true, margin: "0px 0px -10% 0px" }}
-              transition={{ duration: 1.1, ease: [0.22, 1, 0.36, 1] }}
-              className="overflow-hidden rounded-lg border border-navy/10"
-            >
+            <div className="overflow-hidden rounded-lg border border-navy/10">
               <div className="aspect-[16/11] w-full">
                 <img
                   src="/images/sip.jpg"
                   alt="Commercial cargo vessel"
+                  width={1600}
+                  height={1100}
+                  loading="eager"
+                  fetchPriority="high"
+                  decoding="async"
                   className="h-full w-full object-cover"
                 />
               </div>
-            </motion.div>
+            </div>
 
             <div className="absolute -bottom-10 -left-4 hidden w-[46%] overflow-hidden rounded-lg border border-navy/10 shadow-[0_30px_60px_-30px_rgba(23,43,58,0.6)] sm:block lg:-left-16">
               <div className="aspect-[4/3] w-full">
                 <img
                   src="/images/3.jpg"
                   alt="Vessel deck and cargo handling operations"
+                  width={800}
+                  height={600}
+                  loading="eager"
+                  decoding="async"
                   className="h-full w-full object-cover"
                 />
               </div>

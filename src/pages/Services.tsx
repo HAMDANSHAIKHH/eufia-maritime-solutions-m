@@ -6,7 +6,7 @@ import { CTASection } from "@/components/CTASection";
 import { ServiceCard } from "@/components/ServiceCard";
 import { Reveal, SplitHeading, StaggerGroup, StaggerItem } from "@/components/anim/primitives";
 import { SERVICES, SERVICE_COVER_IMAGES } from "@/data/services";
-import { breadcrumbJsonLd, usePageSeo } from "@/lib/seo";
+import { breadcrumbJsonLd, mergeJsonLd, usePageSeo, webPageJsonLd } from "@/lib/seo";
 
 const FIRST_HALF = SERVICES.slice(0, 4);
 const SECOND_HALF = SERVICES.slice(4);
@@ -17,10 +17,18 @@ export default function Services() {
     description:
       "Explore EUFIA's ten maritime and logistics services: vessel chartering, dry bulk shipping, tanker chartering, freight forwarding, project cargo, maritime consultancy, cargo inspection, global logistics, maritime AI and digital solutions, and vessel spare parts supply.",
     path: "/services",
-    jsonLd: breadcrumbJsonLd([
-      { name: "Home", path: "/" },
-      { name: "Services", path: "/services" },
-    ]),
+    jsonLd: mergeJsonLd(
+      breadcrumbJsonLd([
+        { name: "Home", path: "/" },
+        { name: "Services", path: "/services" },
+      ]),
+      webPageJsonLd({
+        name: "Maritime and Logistics Services",
+        description:
+          "Explore EUFIA services covering vessel chartering, dry bulk shipping, tanker chartering, freight forwarding, project cargo and maritime consultancy.",
+        path: "/services",
+      }),
+    ),
   });
 
   return (

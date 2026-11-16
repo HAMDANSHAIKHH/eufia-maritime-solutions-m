@@ -5,7 +5,7 @@ import { ServiceArt } from "@/components/art/scenes";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
 import { CTASection } from "@/components/CTASection";
 import { Reveal, SplitHeading, StaggerGroup, StaggerItem } from "@/components/anim/primitives";
-import { breadcrumbJsonLd, usePageSeo } from "@/lib/seo";
+import { breadcrumbJsonLd, mergeJsonLd, usePageSeo, webPageJsonLd } from "@/lib/seo";
 
 const CHAIN = [
   {
@@ -36,10 +36,18 @@ export default function GlobalNetwork() {
     description:
       "Explore EUFIA's global connectivity — how integrated maritime, chartering, forwarding and logistics services support international cargo movement across world markets.",
     path: "/global-network",
-    jsonLd: breadcrumbJsonLd([
-      { name: "Home", path: "/" },
-      { name: "Global Network", path: "/global-network" },
-    ]),
+    jsonLd: mergeJsonLd(
+      breadcrumbJsonLd([
+        { name: "Home", path: "/" },
+        { name: "Global Network", path: "/global-network" },
+      ]),
+      webPageJsonLd({
+        name: "Global Network",
+        description:
+          "Understand EUFIA's global maritime connectivity across chartering, forwarding, inspection and logistics operations.",
+        path: "/global-network",
+      }),
+    ),
   });
 
   return (

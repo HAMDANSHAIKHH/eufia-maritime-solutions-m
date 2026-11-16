@@ -39,7 +39,7 @@ export default function ServiceDetail() {
       : { title: "Service not found", description: "", path: "/services", noindex: true },
   );
 
-  if (!service) return <Navigate to="/service-not-found" replace />;
+  if (!service) return <Navigate to="/404" replace />;
 
   const index = SERVICES.findIndex((s) => s.slug === service.slug);
   const immersive = index % 2 === 0;

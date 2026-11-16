@@ -1,6 +1,4 @@
-import '@vly-ai/integrations';
 import { Toaster } from "@/components/ui/sonner";
-import { VlyToolbar } from "../vly-toolbar-readonly.tsx";
 import React, { StrictMode, useEffect, lazy, Suspense } from "react";
 import { createRoot } from "react-dom/client";
 import { BrowserRouter, Route, Routes, useLocation } from "react-router";
@@ -84,6 +82,18 @@ class RootErrorBoundary extends React.Component<
   }
 }
 
+if (import.meta.env.DEV) {
+  void import("@vly-ai/integrations");
+}
+
+const DevToolbar = import.meta.env.DEV
+  ? React.lazy(() =>
+      import("../vly-toolbar-readonly.tsx").then((module) => ({
+        default: module.VlyToolbar,
+      })),
+    )
+  : null;
+
 function RouteSyncer() {
   const location = useLocation();
   useEffect(() => {
@@ -110,9 +120,13 @@ function RouteSyncer() {
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <RootErrorBoundary>
-      <ToolbarErrorBoundary>
-        <VlyToolbar />
-      </ToolbarErrorBoundary>
+      {DevToolbar && (
+        <ToolbarErrorBoundary>
+          <Suspense fallback={null}>
+            <DevToolbar />
+          </Suspense>
+        </ToolbarErrorBoundary>
+      )}
       <BrowserRouter>
         <RouteSyncer />
         <Suspense fallback={<RouteLoading />}>
@@ -127,6 +141,7 @@ createRoot(document.getElementById("root")!).render(
               <Route path="/privacy-policy" element={<PrivacyPolicy />} />
               <Route path="/terms-and-conditions" element={<TermsAndConditions />} />
               <Route path="/sitemap" element={<SitemapPage />} />
+              <Route path="/404" element={<NotFound />} />
               <Route path="*" element={<NotFound />} />
             </Route>
           </Routes>

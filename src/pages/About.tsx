@@ -10,7 +10,7 @@ import {
   StaggerItem,
 } from "@/components/anim/primitives";
 import { SERVICES } from "@/data/services";
-import { breadcrumbJsonLd, usePageSeo } from "@/lib/seo";
+import { breadcrumbJsonLd, mergeJsonLd, usePageSeo, webPageJsonLd } from "@/lib/seo";
 
 const PHILOSOPHY = [
   {
@@ -51,10 +51,18 @@ export default function About() {
     description:
       "Learn about EUFIA — a maritime and logistics service provider delivering vessel chartering, shipping, freight forwarding, consultancy and inspection services for international cargo movements.",
     path: "/about",
-    jsonLd: breadcrumbJsonLd([
-      { name: "Home", path: "/" },
-      { name: "About Us", path: "/about" },
-    ]),
+    jsonLd: mergeJsonLd(
+      breadcrumbJsonLd([
+        { name: "Home", path: "/" },
+        { name: "About Us", path: "/about" },
+      ]),
+      webPageJsonLd({
+        name: "About EUFIA",
+        description:
+          "Learn about EUFIA, a maritime shipping and logistics partner focused on vessel chartering, forwarding, consultancy and cargo operations.",
+        path: "/about",
+      }),
+    ),
   });
 
   return (

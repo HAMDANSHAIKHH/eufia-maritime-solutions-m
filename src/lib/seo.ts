@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 import { CONTACT, SITE } from "@/data/site";
 
 /**
@@ -73,15 +73,22 @@ export function usePageSeo({
   jsonLd,
   image,
 }: PageSeo) {
-  const serialized = jsonLd ? JSON.stringify(jsonLd) : "";
+  const fullTitle = useMemo(
+    () => (title.endsWith("EUFIA") || title.includes("EUFIA") ? title : `${title} | EUFIA`),
+    [title],
+  );
+  const canonical = useMemo(() => absoluteUrl(path), [path]);
+  const ogImage = useMemo(
+    () => (image ? absoluteUrl(image) : `${SITE.url}/logo.png`),
+    [image],
+  );
 
   useEffect(() => {
-    const fullTitle = title.endsWith("EUFIA") || title.includes("EUFIA") ? title : `${title} | EUFIA`;
-    const canonical = absoluteUrl(path);
-
     document.title = fullTitle;
     upsertMeta("name", "description", description);
     upsertMeta("name", "robots", noindex ? "noindex, nofollow" : "index, follow");
+    upsertMeta("name", "author", SITE.companyName);
+    upsertMeta("property", "og:site_name", SITE.name);
 
     upsertLink("canonical", canonical);
 
@@ -89,14 +96,16 @@ export function usePageSeo({
     upsertMeta("property", "og:description", description);
     upsertMeta("property", "og:url", canonical);
     upsertMeta("property", "og:type", "website");
-    if (image) upsertMeta("property", "og:image", absoluteUrl(image));
+    upsertMeta("property", "og:image", ogImage);
+    upsertMeta("property", "og:image:alt", fullTitle);
 
-    upsertMeta("name", "twitter:card", image ? "summary_large_image" : "summary");
+    upsertMeta("name", "twitter:card", "summary_large_image");
     upsertMeta("name", "twitter:title", fullTitle);
     upsertMeta("name", "twitter:description", description);
+    upsertMeta("name", "twitter:image", ogImage);
 
-    upsertJsonLd("page", serialized ? (JSON.parse(serialized) as JsonLd) : undefined);
-  }, [title, description, path, noindex, serialized, image]);
+    upsertJsonLd("page", jsonLd);
+  }, [canonical, description, fullTitle, jsonLd, noindex, ogImage]);
 }
 
 /* ---------------- Structured data builders ---------------- */
@@ -106,17 +115,20 @@ export function organizationJsonLd(): JsonLd {
     "@context": "https://schema.org",
     "@type": "Organization",
     name: CONTACT.companyName,
+    legalName: CONTACT.companyName,
     url: SITE.url,
     description: SITE.description,
     slogan: SITE.positioning,
     email: CONTACT.email,
     telephone: CONTACT.phone,
+    logo: absoluteUrl("/logo.png"),
     address: {
       "@type": "PostalAddress",
       streetAddress: "DSO - IFZA - 88094 - 001, Building A1, Dubai Digital Park, Dubai Silicon Oasis",
       addressLocality: "Dubai",
       addressCountry: "AE",
     },
+    ...(CONTACT.socials.length > 0 ? { sameAs: CONTACT.socials.map((item) => item.href) } : {}),
   };
 }
 
@@ -127,6 +139,67 @@ export function websiteJsonLd(): JsonLd {
     name: SITE.name,
     url: SITE.url,
     description: SITE.description,
+    inLanguage: "en",
+    publisher: {
+      "@type": "Organization",
+      name: CONTACT.companyName,
+      url: SITE.url,
+    },
+  };
+}
+
+export function webPageJsonLd({
+  name,
+  description,
+  path,
+}: {
+  name: string;
+  description: string;
+  path: string;
+}): JsonLd {
+  return {
+    "@context": "https://schema.org",
+    "@type": "WebPage",
+    name,
+    description,
+    url: absoluteUrl(path),
+    inLanguage: "en",
+    isPartOf: {
+      "@type": "WebSite",
+      name: SITE.name,
+      url: SITE.url,
+    },
+    publisher: {
+      "@type": "Organization",
+      name: CONTACT.companyName,
+      url: SITE.url,
+    },
+  };
+}
+
+export function contactPageJsonLd({
+  name,
+  description,
+  path,
+}: {
+  name: string;
+  description: string;
+  path: string;
+}): JsonLd {
+  return {
+    "@context": "https://schema.org",
+    "@type": "ContactPage",
+    name,
+    description,
+    url: absoluteUrl(path),
+    inLanguage: "en",
+    mainEntity: {
+      "@type": "Organization",
+      name: CONTACT.companyName,
+      email: CONTACT.email,
+      telephone: CONTACT.phone,
+      url: SITE.url,
+    },
   };
 }
 

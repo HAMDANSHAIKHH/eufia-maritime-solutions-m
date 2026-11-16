@@ -1,8 +1,42 @@
-# EUFIA SHIPPING robots.txt
+# EUFIA robots.txt
 
 User-agent: *
 Allow: /
-Disallow: /auth
-Disallow: /dashboard
+Allow: /about
+Allow: /services
+Allow: /global-network
+Allow: /contact
+Allow: /privacy-policy
+Allow: /terms-and-conditions
+Allow: /sitemap.xml
+Allow: /*.css
+Allow: /*.js
+Allow: /*.jpg
+Allow: /*.jpeg
+Allow: /*.png
+Allow: /*.svg
+Allow: /*.webp
+Allow: /*.ico
+
+Disallow: /api/
+Disallow: /private/
+Disallow: /admin/
+Disallow: /dashboard/
+Disallow: /auth/
 
 Sitemap: https://www.eufiashipping.com/sitemap.xml
+
+User-agent: OAI-SearchBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: Googlebot
+Allow: /
+
+User-agent: Bingbot
+Allow: /

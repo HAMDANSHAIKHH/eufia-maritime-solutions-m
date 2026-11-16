@@ -111,6 +111,7 @@ export function SplitHeading({
   delay = 0,
   stagger = 0.06,
   once = true,
+  animate = true,
 }: {
   text?: string;
   lines?: string[][];
@@ -120,9 +121,27 @@ export function SplitHeading({
   delay?: number;
   stagger?: number;
   once?: boolean;
+  animate?: boolean;
 }) {
   const reduce = useReducedMotion();
   const grouped = lines ?? (text ? [text.split(/\s+/).filter(Boolean)] : []);
+
+  if (!animate || reduce) {
+    return (
+      <Tag className={className}>
+        {grouped.map((line, lineIndex) => (
+          <span className="block" key={`line-${lineIndex}`}>
+            {line.map((word, i) => (
+              <span key={`${word}-${i}`} className="inline-block align-bottom">
+                {word}
+                {i < line.length - 1 ? <span className="inline-block">&nbsp;</span> : null}
+              </span>
+            ))}
+          </span>
+        ))}
+      </Tag>
+    );
+  }
 
   const content = grouped.map((line, lineIndex) => (
     <span className="block" key={`line-${lineIndex}`}>
